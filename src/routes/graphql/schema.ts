@@ -257,7 +257,11 @@ export function createGraphQLSchema(
                     try {
                         return await prisma.user.create({ data: dto });
                     } catch (error) {
-                        throw new Error(`Failed to create user: ${error.message}`);
+                        if (error instanceof Error) {
+                            throw new Error(`Failed to create user: ${error.message}`);
+                        } else {
+                            throw new Error('Failed to create user: Unknown error');
+                        }
                     }
                 },
             },
@@ -271,7 +275,11 @@ export function createGraphQLSchema(
                     try {
                         return await prisma.profile.create({ data: dto });
                     } catch (error) {
-                        throw new Error(`Failed to create profile: ${error.message}`);
+                        if (error instanceof Error) {
+                            throw new Error(`Failed to create profile: ${error.message}`);
+                        } else {
+                            throw new Error('Failed to create profile: Unknown error');
+                        }
                     }
                 },
             },
@@ -285,7 +293,12 @@ export function createGraphQLSchema(
                     try {
                         return await prisma.post.create({ data: dto });
                     } catch (error) {
-                        throw new Error(`Failed to create post: ${error.message}`);
+                        if (error instanceof Error) {
+                            throw new Error(`Failed to create post: ${error.message}`);
+                        } else {
+                            throw new Error(`Failed to create post: Unknown error`);
+                        }
+
                     }
                 },
             },
@@ -300,7 +313,12 @@ export function createGraphQLSchema(
                     try {
                         return await prisma.post.update({ where: { id }, data: dto });
                     } catch (error) {
-                        throw new Error(`Failed to update post: ${error.message}`);
+                        if (error instanceof Error) {
+                            throw new Error(`Failed to update post: ${error.message}`);
+                        } else {
+                            throw new Error(`Failed to update post: Unknown error`);
+                        }
+
                     }
                 },
             },
@@ -315,7 +333,12 @@ export function createGraphQLSchema(
                     try {
                         return await prisma.profile.update({ where: { id }, data: dto });
                     } catch (error) {
-                        throw new Error(`Failed to update profile: ${error.message}`);
+                        if (error instanceof Error) {
+                            throw new Error(`Failed to update profile: ${error.message}`);
+                        } else {
+                            throw new Error(`Failed to update post: Unknown error`);
+                        }
+
                     }
                 },
             },
@@ -330,7 +353,12 @@ export function createGraphQLSchema(
                     try {
                         return await prisma.user.update({ where: { id }, data: dto });
                     } catch (error) {
-                        throw new Error(`Failed to update user: ${error.message}`);
+
+                        if (error instanceof Error) {
+                            throw new Error(`Failed to update user: ${error.message}`);
+                        } else {
+                            throw new Error(`Failed to update user: Unknown error`);
+                        }
                     }
                 },
             },
@@ -345,7 +373,12 @@ export function createGraphQLSchema(
                         await prisma.user.delete({ where: { id } });
                         return 'User deleted';
                     } catch (error) {
-                        throw new Error(`Failed to delete user: ${error.message}`);
+
+                        if (error instanceof Error) {
+                            throw new Error(`Failed to delete user: ${error.message}`);
+                        } else {
+                            throw new Error(`Failed to delete user: Unknown error`);
+                        }
                     }
                 },
             },
@@ -360,7 +393,12 @@ export function createGraphQLSchema(
                         await prisma.post.delete({ where: { id } });
                         return 'Post deleted';
                     } catch (error) {
-                        throw new Error(`Failed to delete post: ${error.message}`);
+                        if (error instanceof Error) {
+                            throw new Error(`Failed to delete post: ${error.message}`);
+                        } else {
+                            throw new Error(`Failed to delete post: Unknown error`);
+                        }
+
                     }
                 },
             },
@@ -375,7 +413,12 @@ export function createGraphQLSchema(
                         await prisma.profile.delete({ where: { id } });
                         return 'Profile deleted';
                     } catch (error) {
-                        throw new Error(`Failed to delete profile: ${error.message}`);
+
+                        if (error instanceof Error) {
+                            throw new Error(`Failed to delete profile: ${error.message}`);
+                        } else {
+                            throw new Error(`Failed to delete profile: Unknown error`);
+                        }
                     }
                 },
             },
@@ -393,7 +436,12 @@ export function createGraphQLSchema(
                         });
                         return 'Subscribed';
                     } catch (error) {
-                        throw new Error(`Failed to subscribe: ${error.message}`);
+                        if (error instanceof Error) {
+                            throw new Error(`Failed to subscribe: ${error.message}`);
+                        } else {
+                            throw new Error(`Failed to subscribe: Unknown error`);
+                        }
+
                     }
                 },
             },
@@ -416,7 +464,12 @@ export function createGraphQLSchema(
                         });
                         return 'Unsubscribed';
                     } catch (error) {
-                        throw new Error(`Failed to unsubscribe: ${error.message}`);
+                        if (error instanceof Error) {
+                            throw new Error(`Failed to unsubscribe: ${error.message}`);
+                        } else {
+                            throw new Error(`Failed to unsubscribe: Unknown error`);
+                        }
+
                     }
                 },
             },
