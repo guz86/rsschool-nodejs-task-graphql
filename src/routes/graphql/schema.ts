@@ -198,10 +198,234 @@ export function createGraphQLSchema(
         },
     });
 
+    const createInputType = (name: string, fields: Record<string, any>) => {
+        return new GraphQLInputObjectType({
+            name,
+            fields,
+        });
+    };
 
+    const changePostFields = {
+        title: { type: GraphQLString },
+        content: { type: GraphQLString },
+    };
+
+    const changeProfileFields = {
+        isMale: { type: GraphQLBoolean },
+        yearOfBirth: { type: GraphQLInt },
+        memberTypeId: { type: MemberTypeId },
+    };
+
+    const changeUserFields = {
+        name: { type: GraphQLString },
+        balance: { type: GraphQLFloat },
+    };
+
+    const createPostFields = {
+        title: { type: new GraphQLNonNull(GraphQLString) },
+        content: { type: new GraphQLNonNull(GraphQLString) },
+        authorId: { type: new GraphQLNonNull(UUIDType) },
+    };
+
+    const createProfileFields = {
+        isMale: { type: new GraphQLNonNull(GraphQLBoolean) },
+        yearOfBirth: { type: new GraphQLNonNull(GraphQLInt) },
+        memberTypeId: { type: new GraphQLNonNull(MemberTypeId) },
+        userId: { type: new GraphQLNonNull(UUIDType) },
+    };
+
+    const createUserFields = {
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        balance: { type: new GraphQLNonNull(GraphQLFloat) },
+    };
+
+    const ChangePostInput = createInputType('ChangePostInput', changePostFields);
+    const ChangeProfileInput = createInputType('ChangeProfileInput', changeProfileFields);
+    const ChangeUserInput = createInputType('ChangeUserInput', changeUserFields);
+    const CreatePostInput = createInputType('CreatePostInput', createPostFields);
+    const CreateProfileInput = createInputType('CreateProfileInput', createProfileFields);
+    const CreateUserInput = createInputType('CreateUserInput', createUserFields);
+    const Mutations = new GraphQLObjectType({
+        name: 'Mutations',
+        fields: {
+            createUser: {
+                type: new GraphQLNonNull(User),
+                args: {
+                    dto: { type: new GraphQLNonNull(CreateUserInput) },
+                },
+                resolve: async (_, { dto }) => {
+                    try {
+                        return await prisma.user.create({ data: dto });
+                    } catch (error) {
+                        throw new Error(`Failed to create user: ${error.message}`);
+                    }
+                },
+            },
+
+            createProfile: {
+                type: new GraphQLNonNull(Profile),
+                args: {
+                    dto: { type: CreateProfileInput },
+                },
+                resolve: async (_, { dto }) => {
+                    try {
+                        return await prisma.profile.create({ data: dto });
+                    } catch (error) {
+                        throw new Error(`Failed to create profile: ${error.message}`);
+                    }
+                },
+            },
+
+            createPost: {
+                type: new GraphQLNonNull(Post),
+                args: {
+                    dto: { type: new GraphQLNonNull(CreatePostInput) },
+                },
+                resolve: async (_, { dto }) => {
+                    try {
+                        return await prisma.post.create({ data: dto });
+                    } catch (error) {
+                        throw new Error(`Failed to create post: ${error.message}`);
+                    }
+                },
+            },
+
+            changePost: {
+                type: new GraphQLNonNull(Post),
+                args: {
+                    id: { type: new GraphQLNonNull(UUIDType) },
+                    dto: { type: new GraphQLNonNull(ChangePostInput) },
+                },
+                resolve: async (_, { id, dto }) => {
+                    try {
+                        return await prisma.post.update({ where: { id }, data: dto });
+                    } catch (error) {
+                        throw new Error(`Failed to update post: ${error.message}`);
+                    }
+                },
+            },
+
+            changeProfile: {
+                type: new GraphQLNonNull(Profile),
+                args: {
+                    id: { type: new GraphQLNonNull(UUIDType) },
+                    dto: { type: new GraphQLNonNull(ChangeProfileInput) },
+                },
+                resolve: async (_, { id, dto }) => {
+                    try {
+                        return await prisma.profile.update({ where: { id }, data: dto });
+                    } catch (error) {
+                        throw new Error(`Failed to update profile: ${error.message}`);
+                    }
+                },
+            },
+
+            changeUser: {
+                type: new GraphQLNonNull(User),
+                args: {
+                    id: { type: new GraphQLNonNull(UUIDType) },
+                    dto: { type: new GraphQLNonNull(ChangeUserInput) },
+                },
+                resolve: async (_, { id, dto }) => {
+                    try {
+                        return await prisma.user.update({ where: { id }, data: dto });
+                    } catch (error) {
+                        throw new Error(`Failed to update user: ${error.message}`);
+                    }
+                },
+            },
+
+            deleteUser: {
+                type: new GraphQLNonNull(GraphQLString),
+                args: {
+                    id: { type: new GraphQLNonNull(UUIDType) },
+                },
+                resolve: async (_, { id }) => {
+                    try {
+                        await prisma.user.delete({ where: { id } });
+                        return 'User deleted';
+                    } catch (error) {
+                        throw new Error(`Failed to delete user: ${error.message}`);
+                    }
+                },
+            },
+
+            deletePost: {
+                type: new GraphQLNonNull(GraphQLString),
+                args: {
+                    id: { type: new GraphQLNonNull(UUIDType) },
+                },
+                resolve: async (_, { id }) => {
+                    try {
+                        await prisma.post.delete({ where: { id } });
+                        return 'Post deleted';
+                    } catch (error) {
+                        throw new Error(`Failed to delete post: ${error.message}`);
+                    }
+                },
+            },
+
+            deleteProfile: {
+                type: new GraphQLNonNull(GraphQLString),
+                args: {
+                    id: { type: new GraphQLNonNull(UUIDType) },
+                },
+                resolve: async (_, { id }) => {
+                    try {
+                        await prisma.profile.delete({ where: { id } });
+                        return 'Profile deleted';
+                    } catch (error) {
+                        throw new Error(`Failed to delete profile: ${error.message}`);
+                    }
+                },
+            },
+
+            subscribeTo: {
+                type: new GraphQLNonNull(GraphQLString),
+                args: {
+                    userId: { type: new GraphQLNonNull(UUIDType) },
+                    authorId: { type: new GraphQLNonNull(UUIDType) },
+                },
+                resolve: async (_, { userId, authorId }) => {
+                    try {
+                        await prisma.subscribersOnAuthors.create({
+                            data: { subscriberId: userId, authorId },
+                        });
+                        return 'Subscribed';
+                    } catch (error) {
+                        throw new Error(`Failed to subscribe: ${error.message}`);
+                    }
+                },
+            },
+
+            unsubscribeFrom: {
+                type: new GraphQLNonNull(GraphQLString),
+                args: {
+                    userId: { type: new GraphQLNonNull(UUIDType) },
+                    authorId: { type: new GraphQLNonNull(UUIDType) },
+                },
+                resolve: async (_, { userId, authorId }) => {
+                    try {
+                        await prisma.subscribersOnAuthors.delete({
+                            where: {
+                                subscriberId_authorId: {
+                                    subscriberId: userId,
+                                    authorId,
+                                },
+                            },
+                        });
+                        return 'Unsubscribed';
+                    } catch (error) {
+                        throw new Error(`Failed to unsubscribe: ${error.message}`);
+                    }
+                },
+            },
+        },
+    });
 
     const schema = new GraphQLSchema({
         query: RootQueryType,
+        mutation: Mutations,
     });
 
     return schema;
